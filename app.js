@@ -1,0 +1,14 @@
+import {fetchUser,fetchUserPosts,fetchComments} from "./api.js";
+import {setLoading,showError,clearError,showResults,showWelcome,renderUserProfile,renderPosts,renderComments,renderCommentsMessage,renderSavedUsers} from "./dom.js";
+const $=s=>document.querySelector(s), KEY="user-explorer-bookmarks"; let activeUser=null,savedUsers=[];
+try { savedUsers=JSON.parse(localStorage.getItem(KEY)||"[]"); if(!Array.isArray(savedUsers))savedUsers=[]; } catch { savedUsers=[]; }
+const isSaved=id=>savedUsers.some(u=>u.id===id);
+function updateSaved(){renderSavedUsers(savedUsers,loadUser);}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(savedUsers));}catch{showError("Could not save bookmarks in this browser.");}}
+async function loadUser(id){clearError();setLoading(true);$("#results").hidden=true;$("#welcomeState").hidden=true;try{const user=await fetchUser(id);if(!user?.id)throw new Error("User not found. Enter a User ID from 1 to 10.");activeUser=user;const posts=await fetchUserPosts(id);renderUserProfile(user,isSaved(user.id));renderPosts(posts);showResults();updateSaved();$("#bookmarkButton").addEventListener("click",toggleBookmark);}catch(e){activeUser=null;showWelcome();showError(e.message||"Could not fetch data. Check your connection and try again.");}finally{setLoading(false);}}
+function toggleBookmark(){if(!activeUser)return;if(isSaved(activeUser.id))savedUsers=savedUsers.filter(u=>u.id!==activeUser.id);else{const {id,name,username,email,phone,website,company,address}=activeUser;savedUsers.push({id,name,username,email,phone,website,company,address});}persist();renderUserProfile(activeUser,isSaved(activeUser.id));$("#bookmarkButton").addEventListener("click",toggleBookmark);updateSaved();}
+function validId(value){const n=Number(value);if(!String(value).trim()||!Number.isInteger(n)||n<1||n>10){$("#errorMessage").textContent="Please enter a valid User ID between 1 and 10";return null;}$("#errorMessage").textContent="";return n;}
+$("#searchForm").addEventListener("submit",e=>{e.preventDefault();const id=validId($("#userId").value);if(id!==null)loadUser(id);});
+$("#randomUser").addEventListener("click",()=>{const id=Math.floor(Math.random()*10)+1;$("#userId").value=id;loadUser(id);});
+$("#postsList").addEventListener("click",async e=>{const btn=e.target.closest("[data-comments]");if(!btn)return;const id=Number(btn.dataset.comments),box=$(`#comments-${id}`);if(!box.hidden){box.hidden=true;btn.setAttribute("aria-expanded","false");btn.textContent="View Comments ↓";return;}box.hidden=false;btn.setAttribute("aria-expanded","true");btn.textContent="Hide Comments ↑";if(box.dataset.loaded==="true")return;renderCommentsMessage(id,"Loading comments…");try{renderComments(id,await fetchComments(id));box.dataset.loaded="true";}catch(err){renderCommentsMessage(id,err.message||"Could not load comments.");}});
+updateSaved();

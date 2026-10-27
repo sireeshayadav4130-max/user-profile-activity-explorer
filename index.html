@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>User Profile & Activity Explorer</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="brand"><span class="logo">U</span><div><b>User Explorer</b><small>Profile & Activity Dashboard</small></div></div><span class="online">● API Connected</span></header>
+<div class="layout"><aside><p class="eyebrow">YOUR COLLECTION</p><h2>Saved Users <span id="savedCount">0</span></h2><p class="muted">Bookmark profiles to keep them here for quick access.</p><div id="savedUsers"></div><p class="sidefoot">User Profile Explorer</p></aside>
+<main><p class="eyebrow">DIRECTORY / USER LOOKUP</p><h1>Discover user profiles</h1><p class="muted intro">Explore profile information, recent posts, and comments from one place.</p>
+<form id="searchForm"><label for="userId">Search by User ID <span>(1–10)</span></label><div class="search"><input id="userId" type="number" min="1" max="10" placeholder="Enter a User ID (1–10)"><button class="primary">Find User →</button><button id="randomUser" type="button" class="light">⤨ Random User</button></div><p id="errorMessage" class="error" role="alert"></p></form>
+<div id="loading" hidden>⏳ Loading user profile and activity…</div><p id="pageError" class="error"></p>
+<section id="results" hidden><div class="sectionhead"><div><p class="eyebrow">PROFILE OVERVIEW</p><h2>Candidate profile</h2></div><span class="tag">● Live data</span></div><div id="profileCard"></div><div class="sectionhead"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Latest posts</h2></div><span id="postCount" class="muted"></span></div><div id="postsList" class="posts"></div></section>
+<div id="welcomeState" class="welcome"><div class="illustration">👤</div><h2>Your user directory starts here</h2><p>Enter a User ID from 1 to 10, or choose a random user to explore their profile and posts.</p></div><footer>Built with HTML, CSS & JavaScript · Powered by JSONPlaceholder</footer></main></div><script type="module" src="src/app.js"></script></body></html>
